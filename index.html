@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3. Sınıf Test Platformu</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background-color: #f0f2f5; }
+    .soru-karti {
+      margin-bottom: 20px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: #fff;
+    }
+    .secenek { margin-bottom: 8px; }
+    .sonuc-karti { margin-top: 20px; }
+    .cozum {
+      background-color: #f8f9fa;
+      padding: 10px;
+      border-left: 4px solid #0d6efd;
+      margin-top: 10px;
+      border-radius: 4px;
+    }
+    .ders-btn { margin-bottom: 15px; }
+  </style>
+</head>
+<body>
+  <div class="container py-4">
+    <h1 class="text-center mb-4">3. Sınıf Test Platformu</h1>
+    <div id="app"></div>
+  </div>
+
+  <script>
+    // ---------- Yardımcı Fonksiyonlar ----------
+    function rastgeleSayi(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function karistir(dizi) {
+      const kopya = [...dizi];
+      for (let i = kopya.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [kopya[i], kopya[j]] = [kopya[j], kopya[i]];
+      }
+      return kopya;
+    }
+
+    // ---------- Soru Üretim Fonksiyonları ----------
+
+    // MATEMATİK
+    function matematikSorulariUret(adet) {
+      const sorular = [];
+      const konular = ['toplama', 'cikarma', 'carpma', 'bolme', 'kesir', 'geometri', 'olcme'];
+
+      for (let i = 0; i < adet; i++) {
+        const konu = konular[rastgeleSayi(0, konular.length - 1)];
+        let soru = {};
+
+        if (konu === 'toplama') {
+          const a = rastgeleSayi(100, 999);
+          const b = rastgeleSayi(100, 999);
+          const dogru = a + b;
+          soru = {
+            text: `${a} + ${b} işleminin sonucu kaçtır?`,
+            options: karistir([dogru, dogru + rastgeleSayi(1, 10), dogru - rastgeleSayi(1, 10), dogru + rastgeleSayi(11, 20)]),
+            correct: dogru,
+            solution: `${a} + ${b} = ${dogru}`
+          };
+        } else if (konu === 'cikarma') {
+          const a = rastgeleSayi(500, 999);
+          const b = rastgeleSayi(100, a - 1);
+          const dogru = a - b;
+          soru = {
+            text: `${a} - ${b} işleminin sonucu kaçtır?`,
+            options: karistir([dogru, dogru + rastgeleSayi(1, 10), dogru - rastgeleSayi(1, 10), dogru + rastgeleSayi(11, 20)]),
+            correct: dogru,
+            solution: `${a} - ${b} = ${dogru}`
+          };
+        } else if (konu === 'carpma') {
+          const a = rastgeleSayi(2, 12);
+          const b = rastgeleSayi(2, 12);
+          const dogru = a * b;
+          soru = {
+            text: `${a} x ${b} işleminin sonucu kaçtır?`,
+            options: karistir([dogru, dogru + a, dogru - b, dogru + b]),
+            correct: dogru,
+            solution: `${a} x ${b} = ${dogru}`
+          };
+        } else if (konu === 'bolme') {
+          const b = rastgeleSayi(2, 10);
+          const dogru = rastgeleSayi(2, 10);
+          const a = b * dogru;
+          soru = {
+            text: `${a} ÷ ${b} işleminin sonucu kaçtır?`,
+            options: karistir([dogru, dogru + 1, dogru - 1, dogru + 2]),
+            correct: dogru,
+            solution: `${a} ÷ ${b} = ${dogru}`
+          };
+        } else if (konu === 'kesir') {
+          const pay = rastgeleSayi(1, 5);
+          const payda = rastgeleSayi(pay + 1, 10);
+          const dogru = `${pay}/${payda}`;
+          soru = {
+            text: `Bir pastanın ${pay}/${payda} dilimi yenmiştir. Buna göre pastanın kaçta kaçı yenmiştir?`,
+            options: karistir([dogru, `${pay}/${payda + 1}`, `${pay + 1}/${payda}`, `${payda}/${pay}`]),
+            correct: dogru,
+            solution: `Yenilen kısım ${pay}/${payda} olarak ifade edilir.`
+          };
+        } else if (konu === 'geometri') {
+          const sekiller = ['kare', 'dikdörtgen', 'üçgen', 'daire'];
+          const ozellikler = {
+            'kare': '4 kenarı ve 4 köşesi vardır.',
+            'dikdörtgen': '4 kenarı ve 4 köşesi vardır, karşılıklı kenarları eşittir.',
+            'üçgen': '3 kenarı ve 3 köşesi vardır.',
+            'daire': 'Kenarı ve köşesi yoktur.'
+          };
+          const secilen = sekiller[rastgeleSayi(0, sekiller.length - 1)];
+          const dogruOzellik = ozellikler[secilen];
+          soru = {
+            text: `Aşağıdaki şekillerden hangisinin özelliği "${dogruOzellik}" olarak verilmiştir?`,
+            options: karistir(sekiller.slice()),
+            correct: secilen,
+            solution: `${secilen} şeklinin özelliği: ${dogruOzellik}`
+          };
+        } else if (konu === 'olcme') {
+          const uzunluk = rastgeleSayi(1, 100);
+          const dogru = `${uzunluk * 10} mm`;
+          soru = {
+            text: `Bir kalemin boyu ${uzunluk} cm'dir. Bu kalemin boyu kaç mm'dir?`,
+            options: karistir([dogru, `${uzunluk} mm`, `${uzunluk * 100} mm`, `${uzunluk / 10} mm`]),
+            correct: dogru,
+            solution: `1 cm = 10 mm olduğundan ${uzunluk} cm = ${uzunluk * 10} mm'dir.`
+          };
+        }
+        sorular.push(soru);
+      }
+      return sorular;
+    }
+
+    // TÜRKÇE
+    function turkceSorulariUret(adet) {
+      const sorular = [];
+      const esAnlamli = [
+        { kelime: 'mutlu', es: 'sevinçli' },
+        { kelime: 'üzgün', es: 'kederli' },
+        { kelime: 'hızlı', es: 'süratli' },
+        { kelime: 'güzel', es: 'hoş' },
+        { kelime: 'büyük', es: 'iri' },
+        { kelime: 'küçük', es: 'ufak' },
+        { kelime: 'temiz', es: 'pak' },
+        { kelime: 'kolay', es: 'basit' },
+        { kelime: 'zor', es: 'güç' },
+        { kelime: 'akıllı', es: 'zeki' }
+      ];
+      const zitAnlamli = [
+        { kelime: 'gece', zit: 'gündüz' },
+        { kelime: 'sıcak', zit: 'soğuk' },
+        { kelime: 'büyük', zit: 'küçük' },
+        { kelime: 'ileri', zit: 'geri' },
+        { kelime: 'açık', zit: 'kapalı' },
+        { kelime: 'uzun', zit: 'kısa' },
+        { kelime: 'temiz', zit: 'kirli' },
+        { kelime: 'doğru', zit: 'yanlış' },
+        { kelime: 'hızlı', zit: 'yavaş' },
+        { kelime: 'mutlu', zit: 'üzgün' }
+      ];
+      const yazimKurallari = [
+        { cumle: 'Ali de bizimle geldi.', dogru: 'de ayrı yazılır.' },
+        { cumle: 'Sen de mi geleceksin?', dogru: 'de ayrı, mi ayrı yazılır.' },
+        { cumle: 'Kitabı masada bıraktım.', dogru: 'da ayrı yazılır.' },
+        { cumle: 'Yarın okula gideceğim.', dogru: 'Doğru yazılmıştır.' },
+        { cumle: 'Herşey yolunda gidiyor.', dogru: 'Her şey ayrı yazılır.' }
+      ];
+
+      for (let i = 0; i < adet; i++) {
+        const tip = rastgeleSayi(0, 2);
+        let soru = {};
+
+        if (tip === 0) {
+          const secilen = esAnlamli[rastgeleSayi(0, esAnlamli.length - 1)];
+          const yanlislar = esAnlamli
+            .filter(e => e.kelime !== secilen.kelime && e.es !== secilen.es)
+            .slice(0, 3)
+            .map(e => e.es);
+          soru = {
+            text: `"${secilen.kelime}" kelimesinin eş anlamlısı aşağıdakilerden hangisidir?`,
+            options: karistir([secilen.es, ...yanlislar]),
+            correct: secilen.es,
+            solution: `"${secilen.kelime}" kelimesinin eş anlamlısı "${secilen.es}" kelimesidir.`
+          };
+        } else if (tip === 1) {
+          const secilen = zitAnlamli[rastgeleSayi(0, zitAnlamli.length - 1)];
+          const yanlislar = zitAnlamli
+            .filter(z => z.kelime !== secilen.kelime && z.zit !== secilen.zit)
+            .slice(0, 3)
+            .map(z => z.zit);
+          soru = {
+            text: `"${secilen.kelime}" kelimesinin zıt anlamlısı aşağıdakilerden hangisidir?`,
+            options: karistir([secilen.zit, ...yanlislar]),
+            correct: secilen.zit,
+            solution: `"${secilen.kelime}" kelimesinin zıt anlamlısı "${secilen.zit}" kelimesidir.`
+          };
+        } else {
+          const secilen = yazimKurallari[rastgeleSayi(0, yazimKurallari.length - 1)];
+          soru = {
+            text: `"${secilen.cumle}" cümlesi için aşağıdakilerden hangisi doğrudur?`,
+            options: karistir([secilen.dogru, 'de/da her zaman bitişik yazılır.', 'mi her zaman bitişik yazılır.', 'ki her zaman ayrı yazılır.']),
+            correct: secilen.dogru,
+            solution: `"${secilen.cumle}" cümlesinde ${secilen.dogru}`
+          };
+        }
+        sorular.push(soru);
+      }
+      return sorular;
+    }
+
+    // HAYAT BİLGİSİ
+    function hayatBilgisiSorulariUret(adet) {
+      const sorular = [];
+      const konular = [
+        { soru: 'Okula giderken hangi kıyafetleri giymeliyiz?', dogru: 'Okul kıyafeti', yanlislar: ['Pijama', 'Mayo', 'Kostüm'] },
+        { soru: 'Evde hangi işlerde ailemize yardım edebiliriz?', dogru: 'Odamızı toplamak', yanlislar: ['Televizyon izlemek', 'Oyun oynamak', 'Uyumak'] },
+        { soru: 'Sağlıklı bir kahvaltıda neler olmalıdır?', dogru: 'Süt, yumurta, peynir', yanlislar: ['Cips, kola, çikolata', 'Sadece çay', 'Sadece meyve suyu'] },
+        { soru: 'Trafikte karşıdan karşıya geçerken ne yapmalıyız?', dogru: 'Yeşil ışığı beklemeliyiz', yanlislar: ['Koşmalıyız', 'Kırmızıda geçmeliyiz', 'Yolun ortasında durmalıyız'] },
+        { soru: 'Ülkemizin başkenti neresidir?', dogru: 'Ankara', yanlislar: ['İstanbul', 'İzmir', 'Bursa'] },
+        { soru: 'Doğada yönümüzü nasıl bulabiliriz?', dogru: 'Güneş\'e bakarak', yanlislar: ['Ay\'a bakarak', 'Yıldızlara bakarak', 'Bulutlara bakarak'] },
+        { soru: 'Güneş hangi yönden doğar?', dogru: 'Doğu', yanlislar: ['Batı', 'Kuzey', 'Güney'] },
+        { soru: 'Kroki ne demektir?', dogru: 'Bir yerin kuş bakışı çizimi', yanlislar: ['Bir tür harita', 'Bir tür resim', 'Bir tür yazı'] },
+        { soru: 'Ailemizde kararlar nasıl alınır?', dogru: 'Ortak görüş ile', yanlislar: ['Sadece baba karar verir', 'Sadece anne karar verir', 'Sadece çocuklar karar verir'] },
+        { soru: 'Geri dönüşüm nedir?', dogru: 'Atıkların yeniden kullanılması', yanlislar: ['Çöplerin toplanması', 'Atıkların yakılması', 'Atıkların gömülmesi'] }
+      ];
+
+      for (let i = 0; i < adet; i++) {
+        const secilen = konular[rastgeleSayi(0, konular.length - 1)];
+        sorular.push({
+          text: secilen.soru,
+          options: karistir([secilen.dogru, ...secilen.yanlislar]),
+          correct: secilen.dogru,
+          solution: `Doğru cevap: ${secilen.dogru}`
+        });
+      }
+      return sorular;
+    }
+
+    // FEN BİLİMLERİ
+    function fenBilimleriSorulariUret(adet) {
+      const sorular = [];
+      const konular = [
+        { soru: 'Dünya\'nın şekli nasıldır?', dogru: 'Geoit', yanlislar: ['Düz', 'Kare', 'Üçgen'] },
+        { soru: 'Beş duyumuzdan biri değildir?', dogru: 'Düşünmek', yanlislar: ['Görmek', 'Duymak', 'Tatmak'] },
+        { soru: 'Kuvvetin etkisiyle cisimler ne yapar?', dogru: 'Hareket eder', yanlislar: ['Yok olur', 'Renk değiştirir', 'Buharlaşır'] },
+        { soru: 'Maddenin halleri aşağıdakilerden hangisidir?', dogru: 'Katı, sıvı, gaz', yanlislar: ['Katı, sıvı, plazma', 'Katı, gaz, plazma', 'Sıvı, gaz, plazma'] },
+        { soru: 'Işık hangi ortamda yayılır?', dogru: 'Her yöne', yanlislar: ['Sadece yukarı', 'Sadece aşağı', 'Sadece yatay'] },
+        { soru: 'Ses nasıl oluşur?', dogru: 'Titreşim ile', yanlislar: ['Işık ile', 'Isı ile', 'Basınç ile'] },
+        { soru: 'Canlılar kaça ayrılır?', dogru: 'Bitkiler ve hayvanlar', yanlislar: ['Bitkiler ve cansızlar', 'Hayvanlar ve cansızlar', 'Bitkiler, hayvanlar ve cansızlar'] },
+        { soru: 'Elektrik hangi amaçla kullanılır?', dogru: 'Aydınlatma', yanlislar: ['Isıtma', 'Soğutma', 'Hareket'] },
+        { soru: 'Güneş sistemindeki gezegen sayısı kaçtır?', dogru: '8', yanlislar: ['7', '9', '10'] },
+        { soru: 'Hava katmanına ne denir?', dogru: 'Atmosfer', yanlislar: ['Litosfer', 'Hidrosfer', 'Biyosfer'] }
+      ];
+
+      for (let i = 0; i < adet; i++) {
+        const secilen = konular[rastgeleSayi(0, konular.length - 1)];
+        sorular.push({
+          text: secilen.soru,
+          options: karistir([secilen.dogru, ...secilen.yanlislar]),
+          correct: secilen.dogru,
+          solution: `Doğru cevap: ${secilen.dogru}`
+        });
+      }
+      return sorular;
+    }
+
+    // İNGİLİZCE
+    function ingilizceSorulariUret(adet) {
+      const sorular = [];
+      const kelimeler = [
+        { tr: 'kitap', en: 'book' },
+        { tr: 'kalem', en: 'pen' },
+        { tr: 'masa', en: 'table' },
+        { tr: 'sandalye', en: 'chair' },
+        { tr: 'kapı', en: 'door' },
+        { tr: 'pencere', en: 'window' },
+        { tr: 'okul', en: 'school' },
+        { tr: 'öğretmen', en: 'teacher' },
+        { tr: 'öğrenci', en: 'student' },
+        { tr: 'arkadaş', en: 'friend' },
+        { tr: 'elma', en: 'apple' },
+        { tr: 'muz', en: 'banana' },
+        { tr: 'süt', en: 'milk' },
+        { tr: 'su', en: 'water' },
+        { tr: 'ekmek', en: 'bread' }
+      ];
+
+      for (let i = 0; i < adet; i++) {
+        const secilen = kelimeler[rastgeleSayi(0, kelimeler.length - 1)];
+        const yanlislar = kelimeler
+          .filter(k => k.en !== secilen.en)
+          .slice(0, 3)
+          .map(k => k.en);
+        sorular.push({
+          text: `"${secilen.tr}" kelimesinin İngilizce karşılığı nedir?`,
+          options: karistir([secilen.en, ...yanlislar]),
+          correct: secilen.en,
+          solution: `"${secilen.tr}" = "${secilen.en}"`
+        });
+      }
+      return sorular;
+    }
+
+    // ---------- Uygulama Yönetimi ----------
+    const dersler = {
+      'turkce': { ad: 'Türkçe', uret: turkceSorulariUret },
+      'matematik': { ad: 'Matematik', uret: matematikSorulariUret },
+      'hayat': { ad: 'Hayat Bilgisi', uret: hayatBilgisiSorulariUret },
+      'fen': { ad: 'Fen Bilimleri', uret: fenBilimleriSorulariUret },
+      'ingilizce': { ad: 'İngilizce', uret: ingilizceSorulariUret }
+    };
+
+    let secilenDers = null;
+    let secilenTestNo = null;
+    let testSorulari = [];
+    let kullaniciCevaplari = [];
+
+    function dersSec(ders) {
+      secilenDers = ders;
+      testNoSec();
+    }
+
+    function testNoSec() {
+      const app = document.getElementById('app');
+      app.innerHTML = `
+        <div class="card">
+          <div class="card-body">
+            <h3>${dersler[secilenDers].ad} - Test Seçimi</h3>
+            <div class="mb-3">
+              <label for="testNo" class="form-label">Test Numarası (1-50):</label>
+              <input type="number" class="form-control" id="testNo" min="1" max="50" value="1">
+            </div>
+            <button class="btn btn-primary" onclick="testBaslat()">Testi Başlat</button>
+            <button class="btn btn-secondary" onclick="anaMenu()">Geri</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function testBaslat() {
+      const testNoInput = document.getElementById('testNo');
+      secilenTestNo = parseInt(testNoInput.value);
+      if (isNaN(secilenTestNo) || secilenTestNo < 1 || secilenTestNo > 50) {
+        alert('Lütfen 1 ile 50 arasında bir test numarası girin.');
+        return;
+      }
+      testSorulari = dersler[secilenDers].uret(20);
+      kullaniciCevaplari = new Array(20).fill(null);
+      testGoster();
+    }
+
+    function testGoster() {
+      const app = document.getElementById('app');
+      let html = `<h3>${dersler[secilenDers].ad} - Test ${secilenTestNo}</h3>`;
+      html += '<form id="testForm">';
+      testSorulari.forEach((soru, index) => {
+        html += `
+          <div class="soru-karti">
+            <p><strong>${index + 1}. ${soru.text}</strong></p>
+            ${soru.options.map((opt, optIndex) => `
+              <div class="form-check secenek">
+                <input class="form-check-input" type="radio" name="soru${index}" value="${optIndex}" id="soru${index}_opt${optIndex}">
+                <label class="form-check-label" for="soru${index}_opt${optIndex}">
+                  ${String.fromCharCode(65 + optIndex)}) ${opt}
+                </label>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      });
+      html += '<button type="button" class="btn btn-success" onclick="testBitir()">Testi Bitir</button>';
+      html += '</form>';
+      app.innerHTML = html;
+    }
+
+    function testBitir() {
+      const form = document.getElementById('testForm');
+      const formData = new FormData(form);
+      let dogruSayisi = 0;
+
+      testSorulari.forEach((soru, index) => {
+        const cevap = formData.get(`soru${index}`);
+        kullaniciCevaplari[index] = cevap !== null ? parseInt(cevap) : null;
+        if (cevap !== null && soru.options[parseInt(cevap)] === soru.correct) {
+          dogruSayisi++;
+        }
+      });
+
+      sonucGoster(dogruSayisi);
+    }
+
+    function sonucGoster(dogruSayisi) {
+      const app = document.getElementById('app');
+      let html = `
+        <div class="card sonuc-karti">
+          <div class="card-body">
+            <h3>Test Sonucu</h3>
+            <p>Doğru Sayısı: <strong>${dogruSayisi}</strong> / 20</p>
+            <p>Yanlış Sayısı: <strong>${20 - dogruSayisi}</strong> / 20</p>
+            <p>Puan: <strong>${(dogruSayisi * 5).toFixed(0)}</strong></p>
+            <hr>
+            <h4>Çözümler</h4>
+      `;
+
+      testSorulari.forEach((soru, index) => {
+        const kullaniciCevapIndex = kullaniciCevaplari[index];
+        const kullaniciCevap = kullaniciCevapIndex !== null ? soru.options[kullaniciCevapIndex] : 'Cevap verilmedi';
+        const dogruCevap = soru.correct;
+        const dogruMu = kullaniciCevap === dogruCevap;
+
+        html += `
+          <div class="cozum">
+            <p><strong>${index + 1}. Soru:</strong> ${soru.text}</p>
+            <p><strong>Sizin cevabınız:</strong> ${kullaniciCevap} ${dogruMu ? '✅' : '❌'}</p>
+            <p><strong>Doğru cevap:</strong> ${dogruCevap}</p>
+            <p><strong>Çözüm:</strong> ${soru.solution}</p>
+          </div>
+        `;
+      });
+
+      html += `
+            <button class="btn btn-primary mt-3" onclick="testNoSec()">Yeni Test</button>
+            <button class="btn btn-secondary mt-3" onclick="anaMenu()">Ana Menü</button>
+          </div>
+        </div>
+      `;
+      app.innerHTML = html;
+    }
+
+    function anaMenu() {
+      const app = document.getElementById('app');
+      let html = '<h3>Ders Seçimi</h3><div class="row">';
+      Object.keys(dersler).forEach(key => {
+        html += `
+          <div class="col-md-4 mb-3">
+            <button class="btn btn-outline-primary w-100 ders-btn" onclick="dersSec('${key}')">
+              ${dersler[key].ad}
+            </button>
+          </div>
+        `;
+      });
+      html += '</div>';
+      app.innerHTML = html;
+    }
+
+    // Başlangıç
+    anaMenu();
+  </script>
+</body>
+</html>
